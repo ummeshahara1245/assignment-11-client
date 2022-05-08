@@ -10,14 +10,14 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gribm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pjtoo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function run() {
     try{
         await client.connect();
 
-        const database = client.db('visitnature');
+        const database = client.db('warehouse');
         const servicesCollection = database.collection('services');
         const bookingsCollection = database.collection('booking');
 
@@ -62,6 +62,12 @@ async function run() {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
             const result = await servicesCollection.deleteOne(query);
+            res.json(result);
+        })
+
+        app.post('/services/:id', async (req, res) => {
+            const service = req.body;
+            const result = await servicesCollection.insertOne(service);
             res.json(result);
         })
 
